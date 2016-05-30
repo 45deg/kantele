@@ -45,7 +45,7 @@ function run(source, editor){
       prevContext.close();
     }
     let result = evalProgram(ast, global);
-    if(result.connect){
+    if(result && result.connect){
       components.$play(result);
       let diagram = makeDiagram(result);
       console.log(diagram);
