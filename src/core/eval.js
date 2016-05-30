@@ -1,5 +1,6 @@
 import escapeId from './escape-id';
 import Env from './env';
+import isNative from 'lodash.isnative';
 
 class FunObject {
   constructor(args, rest, body){
@@ -85,7 +86,9 @@ function evalExp(exp, env){
           let args = tail[0].value.map(exp => evalExp(exp, env));
           let func = evalExp(head, env);
           
-          if(func instanceof Function) { // native function
+          if(isNative(func)) { // native function
+            return func(...args);
+          } else if(func instanceof Function) { // JavaScript Function
             return func.apply(env, args);
           } else if(func instanceof FunObject) { // in-scheme function
             return func.call(args, env);
@@ -277,7 +280,19 @@ function evalConst(constant, env){
 }
 
 function evalId(id, env){
-  return env.get(escapeId(id.value));
+  console.log(id.value);
+  if(id.value.startsWith('js/')){
+    let global = Function("return this")();
+    let target = global;
+    let decapId = id.value.replace('js/', '');
+    for(let i of decapId.split(/[\.\/]/)){
+      target = target[i];
+      if(target === undefined) break;
+    }
+    return target;
+  } else {
+    return env.get(escapeId(id.value));
+  }
 }
 
 function evalNumber(number){
