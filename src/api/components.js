@@ -189,15 +189,15 @@ class Component {
     }
     let accTime = [];
     for(let src of sources) {
-      let id = src.seqId;
-      if(accTime[id] === undefined) accTime[id] = 0;
       let len = src.length || src.buffer.duration / src.playbackRate.value;
 
-      if(id === undefined) {
+      if(src.seqId === undefined) {
         src.start(t + src.offset);
         if(len >= 0)
           src.stop(t + src.offset + len);
       } else {
+        let id = src.seqId[0];
+        if(accTime[id] === undefined) accTime[id] = 0;
         src.start(t + src.offset + accTime[id]);
         accTime[id] += src.offset + len;
         if(len >= 0)
