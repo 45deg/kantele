@@ -139,6 +139,34 @@ function drawAnalyser(){
   requestAnimationFrame(drawAnalyser);
 }
 
+function loadExampleList(select) {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', './example/index.json', true);
+  xhr.onload = function(){
+    if (xhr.readyState === xhr.DONE && xhr.status === 200) {
+      var index = JSON.parse(xhr.responseText);
+      index.forEach(function(elem){
+        var option = document.createElement('option');
+        option.value = elem.file;
+        option.innerHTML = elem.title;
+        select.appendChild(option);
+      });
+    }
+  };
+  xhr.send(null);
+}
+
+function loadExampleProgram(file, editor){
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', `./example/${file}`, true);
+  xhr.onload = function(){
+    if (xhr.readyState === xhr.DONE && xhr.status === 200) {
+      editor.setValue(xhr.responseText);
+    }
+  };
+  xhr.send(null);
+}
+
 document.addEventListener("DOMContentLoaded", function(){
   var editor = ace.edit('source');
   editor.getSession().setMode('ace/mode/scheme');
@@ -146,6 +174,16 @@ document.addEventListener("DOMContentLoaded", function(){
   editor.setOptions({
     fontSize: "19pt"
   });
+
+  var select = document.querySelector('select');
+  loadExampleList(select);
+  select.addEventListener('change', function(){
+    var val = select.value;
+    if(val.length > 0)
+      loadExampleProgram(val, editor);
+  })
+
+
   document.querySelector('button').addEventListener('click', function(){
     run(editor.getValue(), editor);
   });
