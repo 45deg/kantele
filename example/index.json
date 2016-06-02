@@ -14,5 +14,9 @@
   {
     "title": "LowPass",
     "file": "004"
+  },
+  {
+    "title": "Fibonacci",
+    "file": "005"
   }
 ]
