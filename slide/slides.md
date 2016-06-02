@@ -66,7 +66,7 @@ class: center, middle
 
 * そこで、feedback 構文を導入
 * `(feedback f .... f ...)` → f が出力の音声オブジェクトとなっている
-* これは、PCLの `fix` 構文が元となっている
+* これは、PCF の `fix` 構文が元となっている
 
 ![feedback2](feedback2.png)
 
