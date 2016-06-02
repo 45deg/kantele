@@ -10,5 +10,9 @@
   {
     "title": "Echo",
     "file": "003"
+  },
+  {
+    "title": "LowPass",
+    "file": "004"
   }
 ]
