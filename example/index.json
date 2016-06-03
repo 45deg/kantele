@@ -18,5 +18,9 @@
   {
     "title": "Fibonacci",
     "file": "005"
+  },
+  {
+    "title": "Random Sequence",
+    "file": "006"
   }
 ]
