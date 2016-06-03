@@ -119,13 +119,13 @@ class Component {
     for(let e of elements){
       if(e.wait) {
         offsetTime = e.length;
-      } else if(e.start) {
+      } else if(e.connect) {
         playables.push(e);
         e.offset = offsetTime;
         e.seqId = [seqId, cnt++];
         offsetTime = 0;
       } else {
-        throw 'elements of sequence must have start/stop method';
+        throw 'elements of sequence must have connect method';
       }
     }
     return this.createNode('sequence', playables);
@@ -187,7 +187,7 @@ class Component {
         return;
       }
     }
-    let accTime = [];
+    let accTime = 0;
     for(let src of sources) {
       let len = src.length || src.buffer.duration / src.playbackRate.value;
 
@@ -197,11 +197,10 @@ class Component {
           src.stop(t + src.offset + len);
       } else {
         let id = src.seqId[0];
-        if(accTime[id] === undefined) accTime[id] = 0;
-        src.start(t + src.offset + accTime[id]);
-        accTime[id] += src.offset + len;
+        src.start(t + src.offset + accTime);
+        accTime += src.offset + len;
         if(len >= 0)
-          src.stop(t + accTime[id]);
+          src.stop(t + accTime);
       }
     }
   }
