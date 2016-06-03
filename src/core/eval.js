@@ -27,7 +27,7 @@ class FunObject {
       for(let i = 0; i < this.args.length; i++) {
           subEnv.set(this.args[i], args[i]);
       }
-      subEnv.set(tgus.rest, args.slice(this.args.length).concat(null));
+      subEnv.set(args.rest, args.slice(this.args.length).concat(null));
             
       return evalBody(this.body, subEnv);
     }
@@ -280,7 +280,6 @@ function evalConst(constant, env){
 }
 
 function evalId(id, env){
-  console.log(id.value);
   if(id.value.startsWith('js/')){
     let global = Function("return this")();
     let target = global;
