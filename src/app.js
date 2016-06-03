@@ -44,19 +44,24 @@ function run(source, editor){
     if(prevContext != null){
       prevContext.close();
     }
-    let result = evalProgram(ast, global);
-    if(result && result.connect){
-      components.$play(result);
-      let diagram = makeDiagram(result);
-      console.log(diagram);
-      resField.innerHTML = '';
-      mermaidAPI.render('graph', diagram, function(svgCode){
-        resField.innerHTML = svgCode;
-      });
-    } else {
-      resField.innerHTML = `<pre>${result}</pre>`;
+    try {
+      let result = evalProgram(ast, global);
+      if(result && result.connect){
+        components.$play(result);
+        let diagram = makeDiagram(result);
+        console.log(diagram);
+        resField.innerHTML = '';
+        mermaidAPI.render('graph', diagram, function(svgCode){
+          resField.innerHTML = svgCode;
+        });
+      } else {
+        resField.innerHTML = `<pre>${result}</pre>`;
+      }
+    } catch(e) {
+      resField.innerHTML = `<span class="err">Runtime Error: ${e.message || e}</span>`;
+    } finally {
+      prevContext = components.context;
     }
-    prevContext = components.context;
   }
 }
 
