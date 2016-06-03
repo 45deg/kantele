@@ -94,7 +94,22 @@ var toplevel = tag('toplevel', or(
 
 var program = tag('program', repeatToEof(toplevel));
 
+function removeComment(code){
+    var stringExp = /"(?:[^"\\]|\\.)*"/g;
+    var matches = [];
+    var result;
+    while(result = stringExp.exec(code)) {
+      matches.push([result.index, result.index + result.input.length]);
+    }
+    code = code.replace(/;.*/, function(str, pos){
+      var isinString = matches.reduce((acc, [a,b]) => (a <= pos && pos <= b) || acc, false);
+      return isinString ? str : '';
+    });
+    return code;
+}
+
 export function parse(input){
+    input = removeComment(input);
     input = input.replace(/\s+$/, ''); // eliminate trailing spaces
     return program(input,0);
 }
