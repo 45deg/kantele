@@ -71,3 +71,20 @@ Makes a simple low-order filter. The first argument is the type of the filter an
 * `(filter 'allpass [freq] [Q])`
 
 The meaning of each filter and its arguments, see https://developer.mozilla.org/en-US/docs/Web/API/BiquadFilterNode#Properties
+
+## (feedback [var-name] [exp..])
+
+Make a feedback-loop of signals. This is something like a macro. You specify the name of variable, such as `f`, then in the body expression you can use `f` that means the output of the body and also can be used as the input (or as an argument).
+
+Example Code:
+```scheme
+(feedback f (delay 0.5 (list wave f)))
+; means
+;
+; +------+    +------------+
+; | wave |-+->| delay 0.1s |--+-->
+; +------+ ^  +------------+  |
+;          |                  |
+;          +------------------+
+;                   f
+```
