@@ -92,7 +92,7 @@ class Component {
 
   compose(nodeList){
     nodeList = convertToArray(nodeList);
-    return gain(1/nodeList.length, nodeList);
+    return this.gain(1/nodeList.length, nodeList);
   }
 
   delay(delayTime, nodeList, delayTimeNode){
