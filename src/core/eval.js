@@ -3,14 +3,15 @@ import Env from './env';
 import isNative from 'lodash.isnative';
 
 class FunObject {
-  constructor(args, rest, body){
+  constructor(args, rest, body, env){
     this.args = args;
     this.rest = rest;
     this.body = body;
+    this.env  = env; 
   }
   
-  call(args, env){
-    var subEnv = new Env(env);
+  call(args){
+    var subEnv = new Env(this.env);
     
     if(this.rest === null) { // not have a rest
       if(args.length !== this.args.length)
@@ -62,7 +63,7 @@ function evalDefine(define, env) {
     var argIds = args.value.map(arg => escapeId(arg.value));
     var restId = (rest.value !== null) ? escapeId(rest.value.value[1].value)
                                        : null;
-    env.set(escapeId(id.value), new FunObject(argIds, restId, body));
+    env.set(escapeId(id.value), new FunObject(argIds, restId, body, env));
   } else {
     throw 'Invalid syntax';
   }
@@ -91,8 +92,9 @@ function evalExp(exp, env){
           } else if(func instanceof Function) { // JavaScript Function
             return func.apply(env, args);
           } else if(func instanceof FunObject) { // in-scheme function
-            return func.call(args, env);
+            return func.call(args);
           } else {
+            debugger;
             throw 'Calling non-function';
           }
       } else {
@@ -103,17 +105,17 @@ function evalExp(exp, env){
 }
 
 var special = {};
-special['lambda'] = function(tail){
+special['lambda'] = function(tail, env){
   var [arg, body] = tail;
   if(arg.value.type === 'arg1') { // single arguments
-    return new FunObject([], escapeId(arg.value.value), body);
+    return new FunObject([], escapeId(arg.value.value), body, env);
   } else {
     let argList = arg.value.value[0].value;
     let argIds = argList.map(arg => escapeId(arg.value));
     let argType = arg.value.type;
     let restId = (argType === 'arg2') ? escapeId(arg.value.value[2].value)
                                       : null;
-    return new FunObject(argIds, restId, body);
+    return new FunObject(argIds, restId, body, env);
   }
 };
 special['quote'] = special["'"] = function(tail){
@@ -136,7 +138,7 @@ special['let'] = function(tail, env){
   }
   if(id.value !== null){
     subEnv.set(escapeId(id.value.value), 
-       new FunObject(bindNames, null, body));
+       new FunObject(bindNames, null, body, subEnv));
   }
   return evalBody(body, subEnv);
 };
